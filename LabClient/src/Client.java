@@ -22,20 +22,43 @@ import java.io.*;
 import java.net.*;
 
 public class Client implements Runnable {
-    public static final int PORT = 2500;
-    public static final String HOST = "localhost";
+    //public static final int PORT = 2500;
+    // public static final String HOST = "localhost";
     private String name = null;
+
+    public static int PORT;
+    public static String HOST;
+
 
     public Client(String s) {
         name = s;
     }
 
     public void run() {
+        String path = "D:\\Java\\lab4\\ClientSeverSocket\\LabClient\\src\\config.txt";
+        File fileConfig = new File(path);
+        if (fileConfig.exists()) {
+            try {
+                BufferedReader configReader = new BufferedReader(new FileReader(fileConfig.getAbsoluteFile()));
+                try {
+                    HOST = configReader.readLine();
+                    PORT = Integer.parseInt(configReader.readLine());
+
+                    System.out.println(HOST);
+                    System.out.println(PORT);
+                } finally {
+                    configReader.close();
+                }
+            } catch (IOException e) {
+                throw new RuntimeException();
+            }
+        }
+
         try {
             Socket socket = new Socket(HOST, PORT);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in)); // для считывания информации с консоли
 
             while (true) {
                 System.out.println("Введите операнду и операцию:");

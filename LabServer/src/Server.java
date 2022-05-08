@@ -22,9 +22,10 @@ import java.io.*;
 import java.net.*;
 
 public class Server {
-    public static final int PORT = 2500;
+    //public static final int PORT = 2500;
     private static final int TIME_SEND_SLEEP = 100;
     private ServerSocket servSocket;
+    public static int PORT;
 
     public static void main(String[] args) {
         Server server = new Server();
@@ -33,7 +34,9 @@ public class Server {
 
     public Server() {
         try {
-            servSocket = new ServerSocket(PORT);
+            BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+            System.out.print("Введите ПОРТ: ");
+            servSocket = new ServerSocket(Integer.parseInt(in.readLine()));
         } catch (IOException e) {
             System.err.println("Не удаётся открыть сокет для сервера: " + e.toString());
         }
@@ -57,7 +60,7 @@ public class Server {
                         // и отправлять
                         out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
                         System.out.println("Слушатель запущен");
-                        while (true) {
+                            while (true) {
                             String clientWord = in.readLine();
 
                             if(clientWord.charAt(clientWord.length() - 1) == '+'){
