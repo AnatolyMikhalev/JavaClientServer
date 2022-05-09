@@ -28,7 +28,7 @@ public class Client implements Runnable {
 
     public static int PORT;
     public static String HOST;
-    public static String logFileName;
+    public static String logfileName;
 
 
     public Client(String s) {
@@ -44,11 +44,11 @@ public class Client implements Runnable {
                 try {
                     HOST = configReader.readLine();
                     PORT = Integer.parseInt(configReader.readLine());
-                    logFileName = configReader.readLine();
+                    logfileName = configReader.readLine();
 
                     System.out.println(HOST);
                     System.out.println(PORT);
-                    System.out.println(logFileName);
+                    System.out.println(logfileName);
                 } finally {
                     configReader.close();
                 }
@@ -62,9 +62,13 @@ public class Client implements Runnable {
         ReadConfig();
 
         try {
+            File logfile = new File(logfileName);
+            if (!logfile.exists())
+                logfile.createNewFile();
+
             Socket socket = new Socket(HOST, PORT);
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-            //BufferedWriter writer = new BufferedWriter(new OutputStreamWriter());
+            BufferedWriter writer = new BufferedWriter(new FileWriter(logfile));
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
@@ -77,14 +81,19 @@ public class Client implements Runnable {
 
                 String serverWord = in.readLine(); // ждём, что скажет сервер
                 System.out.println(serverWord); // получив - выводим на экран
+                writer.write(serverWord + "\n");
+                writer.flush();
 
                 if(word.charAt(word.length() - 1) == '='){
                     serverWord = in.readLine(); // ждём, что скажет сервер
                     System.out.println(serverWord); // получив - выводим на экран
+                    writer.write(serverWord + "\n");
+                    writer.flush();
                     break;
                 }
                 Thread.yield();
             }
+
         } catch (IOException e) {
             System.err.println("Исключение: " + e);
         }

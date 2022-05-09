@@ -82,8 +82,6 @@ public class Server {
                                 out.flush();
                                 break;
                             }
-
-                            //Thread.sleep(TIME_SEND_SLEEP); //TODO: удалить эту строчку
                         }
                     } finally {
                         in.close();
