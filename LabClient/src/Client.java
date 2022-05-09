@@ -28,13 +28,14 @@ public class Client implements Runnable {
 
     public static int PORT;
     public static String HOST;
+    public static String logFileName;
 
 
     public Client(String s) {
         name = s;
     }
 
-    public void run() {
+    private void ReadConfig(){  // Чтение файла настроек
         String path = "D:\\Java\\lab4\\ClientSeverSocket\\LabClient\\src\\config.txt";
         File fileConfig = new File(path);
         if (fileConfig.exists()) {
@@ -43,9 +44,11 @@ public class Client implements Runnable {
                 try {
                     HOST = configReader.readLine();
                     PORT = Integer.parseInt(configReader.readLine());
+                    logFileName = configReader.readLine();
 
                     System.out.println(HOST);
                     System.out.println(PORT);
+                    System.out.println(logFileName);
                 } finally {
                     configReader.close();
                 }
@@ -53,10 +56,15 @@ public class Client implements Runnable {
                 throw new RuntimeException();
             }
         }
+    }
+
+    public void run() {
+        ReadConfig();
 
         try {
             Socket socket = new Socket(HOST, PORT);
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+            //BufferedWriter writer = new BufferedWriter(new OutputStreamWriter());
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
@@ -71,9 +79,10 @@ public class Client implements Runnable {
                 System.out.println(serverWord); // получив - выводим на экран
 
                 if(word.charAt(word.length() - 1) == '='){
+                    serverWord = in.readLine(); // ждём, что скажет сервер
+                    System.out.println(serverWord); // получив - выводим на экран
                     break;
                 }
-                //if (word.charAt(word.length() - 1) == '=') break;
                 Thread.yield();
             }
         } catch (IOException e) {

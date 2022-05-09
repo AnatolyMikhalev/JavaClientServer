@@ -55,45 +55,46 @@ public class Server {
 
             public void run() {
                 try {
-                    try{
+                    try {
                         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                        // и отправлять
                         out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
                         System.out.println("Слушатель запущен");
-                            while (true) {
+
+                        char operation = '+';
+
+                        while (true) {
                             String clientWord = in.readLine();
 
-                            if(clientWord.charAt(clientWord.length() - 1) == '+'){
+                            if (operation == '+') {
                                 sum += Integer.parseInt(clientWord.substring(0, clientWord.length() - 1));
                                 out.write("Выражение принято\n");
-                            }
-                            else if(clientWord.charAt(clientWord.length() - 1) == '-'){
+                            } else if (operation == '-') {
                                 sum -= Integer.parseInt(clientWord.substring(0, clientWord.length() - 1));
                                 out.write("Выражение принято\n");
-                            }
-                            else if(clientWord.charAt(clientWord.length() - 1) == '='){
-                                sum += Integer.parseInt(clientWord.substring(0, clientWord.length() - 1));
-                                out.write("Результат: " + Integer.toString(sum) + '\n');
-                                out.flush();
-                                break;
-                            }
-                            else{
+                            } else {
                                 out.write("Неверное выражение\n");
                             }
                             out.flush();
 
-                            Thread.sleep(TIME_SEND_SLEEP);
+                            operation = clientWord.charAt(clientWord.length() - 1);
+                            if (operation == '=') {
+                                out.write("Результат: " + Integer.toString(sum) + '\n');
+                                out.flush();
+                                break;
+                            }
+
+                            //Thread.sleep(TIME_SEND_SLEEP); //TODO: удалить эту строчку
                         }
-                    }
-                    finally {
+                    } finally {
                         in.close();
                         out.close();
                     }
                 } catch (IOException e) {
                     System.err.println("Исключение: " + e.toString());
-                } catch (InterruptedException e) {
-                    System.err.println("Исключение: " + e.toString());
                 }
+//                catch (InterruptedException e) {
+//                    System.err.println("Исключение: " + e.toString());
+//                }
             }
         }
 
