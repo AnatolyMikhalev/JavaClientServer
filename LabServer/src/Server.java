@@ -26,6 +26,7 @@ public class Server {
     private static final int TIME_SEND_SLEEP = 100;
     private ServerSocket servSocket;
     public static int PORT;
+    BufferedWriter writer;
 
     public static void main(String[] args) {
         Server server = new Server();
@@ -37,6 +38,14 @@ public class Server {
             BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
             System.out.print("Введите ПОРТ: ");
             servSocket = new ServerSocket(Integer.parseInt(in.readLine()));
+
+            System.out.print("Введите путь к журналу сервера: ");       //  D://Java//lab4//ClientSeverSocket//LabServer//src//logfile.txt
+            String logfileName = in.readLine();
+            File logfile = new File(logfileName);
+            if(!logfile.exists())
+                logfile.createNewFile();
+            writer = new BufferedWriter(new FileWriter(logfile));
+
         } catch (IOException e) {
             System.err.println("Не удаётся открыть сокет для сервера: " + e.toString());
         }
@@ -46,14 +55,12 @@ public class Server {
         int intValue;
 
         if (string == null || string.equals("")) {
-            //System.out.println("String cannot be parsed, it is null or empty.");
             return false;
         }
         try {
             intValue = Integer.parseInt(string);
             return true;
         } catch (NumberFormatException e) {
-            //System.out.println("Input String cannot be parsed to Integer.");
         }
         return false;
     }
@@ -80,6 +87,8 @@ public class Server {
 
                         while (true) {
                             String clientWord = in.readLine();
+                            writer.write(clientWord + '\n');
+                            writer.flush();
 
                             if (isNumeric(clientWord.substring(0, clientWord.length() - 1)) && !(clientWord.charAt(clientWord.length() - 1) != '=' && clientWord.charAt(clientWord.length() - 1) != '-' && clientWord.charAt(clientWord.length() - 1) != '+')) {
                                 if (operation == '+') {
