@@ -42,6 +42,22 @@ public class Server {
         }
     }
 
+    public static boolean isNumeric(String string) {
+        int intValue;
+
+        if (string == null || string.equals("")) {
+            //System.out.println("String cannot be parsed, it is null or empty.");
+            return false;
+        }
+        try {
+            intValue = Integer.parseInt(string);
+            return true;
+        } catch (NumberFormatException e) {
+            //System.out.println("Input String cannot be parsed to Integer.");
+        }
+        return false;
+    }
+
     public void go() {
         class Listener implements Runnable {
             Socket socket;
@@ -65,24 +81,29 @@ public class Server {
                         while (true) {
                             String clientWord = in.readLine();
 
-                            if (operation == '+') {
-                                sum += Integer.parseInt(clientWord.substring(0, clientWord.length() - 1));
-                                out.write("Выражение принято\n");
-                            } else if (operation == '-') {
-                                sum -= Integer.parseInt(clientWord.substring(0, clientWord.length() - 1));
-                                out.write("Выражение принято\n");
+                            if (isNumeric(clientWord.substring(0, clientWord.length() - 1)) && !(clientWord.charAt(clientWord.length() - 1) != '=' && clientWord.charAt(clientWord.length() - 1) != '-' && clientWord.charAt(clientWord.length() - 1) != '+')) {
+                                if (operation == '+') {
+                                    sum += Integer.parseInt(clientWord.substring(0, clientWord.length() - 1));
+                                    out.write("Выражение принято\n");
+                                    out.flush();
+                                } else if (operation == '-') {
+                                    sum -= Integer.parseInt(clientWord.substring(0, clientWord.length() - 1));
+                                    out.write("Выражение принято\n");
+                                    out.flush();
+                                }
+
+                                operation = clientWord.charAt(clientWord.length() - 1);
+                                if (operation == '=') {
+                                    out.write("Результат: " + Integer.toString(sum) + '\n');
+                                    out.flush();
+                                    break;
+                                }
                             } else {
                                 out.write("Неверное выражение\n");
-                            }
-                            out.flush();
-
-                            operation = clientWord.charAt(clientWord.length() - 1);
-                            if (operation == '=') {
-                                out.write("Результат: " + Integer.toString(sum) + '\n');
                                 out.flush();
-                                break;
                             }
                         }
+
                     } finally {
                         in.close();
                         out.close();
@@ -90,9 +111,6 @@ public class Server {
                 } catch (IOException e) {
                     System.err.println("Исключение: " + e.toString());
                 }
-//                catch (InterruptedException e) {
-//                    System.err.println("Исключение: " + e.toString());
-//                }
             }
         }
 
