@@ -22,7 +22,6 @@ import java.io.*;
 import java.net.*;
 
 public class Server {
-    //public static final int PORT = 2500;
     private static final int TIME_SEND_SLEEP = 100;
     private ServerSocket servSocket;
     public static int PORT;

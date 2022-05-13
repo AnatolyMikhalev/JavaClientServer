@@ -22,8 +22,6 @@ import java.io.*;
 import java.net.*;
 
 public class Client implements Runnable {
-    //public static final int PORT = 2500;
-    // public static final String HOST = "localhost";
     private String name = null;
 
     public static int PORT;
@@ -101,10 +99,8 @@ public class Client implements Runnable {
 
     public static void main(String[] args) {
         String name = "имя";
-        //for (int i = 1; i <= CLIENT_COUNT; i++) {
         Client ja = new Client(name + 1);
         Thread th = new Thread(ja);
         th.start();
-        //}
     }
 }
